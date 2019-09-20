@@ -25,7 +25,7 @@ jobs:
   - bash: |
       docker build \
         -f docker/ubuntu/Dockerfile.$(ubuntu.version.dot) \
-        -t hwangsaeul/ci-ubuntu-$(ubuntu.version.name) .
+        -t hwangsaeul/ci-ubuntu-$(ubuntu.version.name) docker/ubuntu
 
   - bash: |
 
