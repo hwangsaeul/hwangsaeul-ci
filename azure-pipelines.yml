@@ -27,6 +27,8 @@ jobs:
         -f docker/ubuntu/Dockerfile.$(ubuntu.version.dot) \
         -t hwangsaeul/ci-ubuntu-$(ubuntu.version.name) docker/ubuntu
 
+    displayName: Build docker image
+
   - bash: |
 
       TAG=`git tag --contains`
@@ -52,6 +54,7 @@ jobs:
       fi
 
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+    displayName: Push images to ACR
 
   - bash: |
       docker login -u $(acr.id) -p $(acr.passwd) $(acr.host)
@@ -60,6 +63,7 @@ jobs:
       docker save \
         hwangsaeul/ci-ubuntu-$(ubuntu.version.name) | gzip > ci-ubuntu-$(ubuntu.version.name)-$SHORT_GIT_HASH.tgz
     condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    displayName: Archiving docker image
 
   - task: CopyFiles@2
     condition: not(canceled())
