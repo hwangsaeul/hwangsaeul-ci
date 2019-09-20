@@ -1,0 +1,67 @@
+trigger:
+- master
+- refs/tags/*
+
+jobs: 
+- job: BuildDockerImage
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  strategy:
+    matrix:
+      ubuntu-1604:
+        ubuntu.version.dot: '16.04'
+        ubuntu.version.name: '1604'
+      ubuntu-1804:
+        ubuntu.version.dot: '18.04'
+        ubuntu.version.name: '1804'
+      ubuntu-1904:
+        ubuntu.version.dot: '19.04'
+        ubuntu.version.name: '1904'
+
+  variables:
+  - group: hwangsaeul-acr
+
+  steps:
+  - bash: |
+      docker build \
+        -f docker/ubuntu/Dockerfile.$(ubuntu.version.dot) \
+        -t hwangsaeul/ci-ubuntu-$(ubuntu.version.name) .
+
+  - bash: |
+
+      TAG=`git tag --contains`
+      PARSED_TAG=`echo "$TAG" | egrep -o "^(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))+(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"`
+       
+      if [ x"$PARSED_TAG" != "x" ]; then
+
+        docker login -u $(acr.id) -p $(acr.passwd) $(acr.host)
+
+        docker tag \
+          hwangsaeul/ci-ubuntu-$(ubuntu.version.name) \
+          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):$PARSED_TAG
+
+        docker tag \
+          hwangsaeul/ci-ubuntu-$(ubuntu.version.name) \
+          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):latest
+
+        docker push \
+          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):$PARSED_TAG
+
+        docker push \
+          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):latest
+      fi
+
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+
+  - bash: |
+      docker login -u $(acr.id) -p $(acr.passwd) $(acr.host)
+      SHORT_GIT_HASH=`git rev-parse --short HEAD`
+
+      docker tag \
+        hwangsaeul/ci-ubuntu-$(ubuntu.version.name) \
+        $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):master-$SHORT_GIT_HASH
+
+      docker push \
+        $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):master-$SHORT_GIT_HASH
+
+    condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
