@@ -57,11 +57,18 @@ jobs:
       docker login -u $(acr.id) -p $(acr.passwd) $(acr.host)
       SHORT_GIT_HASH=`git rev-parse --short HEAD`
 
-      docker tag \
-        hwangsaeul/ci-ubuntu-$(ubuntu.version.name) \
-        $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):master-$SHORT_GIT_HASH
-
-      docker push \
-        $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):master-$SHORT_GIT_HASH
-
+      docker save \
+        hwangsaeul/ci-ubuntu-$(ubuntu.version.name) | gzip > ci-ubuntu-$(ubuntu.version.name)-$SHORT_GIT_HASH.tgz
     condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+  - task: CopyFiles@2
+    condition: not(canceled())
+    inputs:
+      contents: '*.tgz'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      artifactName: $(System.JobName)
+    # publishing artifacts from PRs from a fork is currently blocked
+    condition: not(canceled())
