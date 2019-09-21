@@ -8,7 +8,15 @@ RUN apt-get update && \
   apt-get update && \
   apt-get install --assume-yes debhelper meson libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev \
     libsrt-dev gstreamer1.0-plugins-good git \
-    ca-certificates curl jq iputils-ping libcurl4 libicu63 python3-wheel libssl1.1
+    ca-certificates curl jq iputils-ping libcurl4 libicu63 python3-wheel libssl1.1 wget
+
+# install donet sdk 2.2
+RUN wget https://packages.microsoft.com/config/ubuntu/19.04/packages-microsoft-prod.deb \
+ && dpkg -i packages-microsoft-prod.deb \
+ && rm packages-microsoft-prod.deb \
+ && apt-get install --assume-yes apt-transport-https \
+ && apt-get update \
+ && apt-get install --assume-yes dotnet-sdk-2.2
 
 RUN mkdir -p /azp
 
