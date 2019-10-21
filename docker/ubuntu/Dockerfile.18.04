@@ -7,7 +7,9 @@ RUN apt-get update && \
   add-apt-repository ppa:hwangsaeul/ppa && \
   apt-get update && \
   apt-get install --assume-yes debhelper meson libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev \
-    libsrt-dev gstreamer1.0-plugins-good git \
+    libsrt-dev \
+    gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
+    git \
     ca-certificates curl jq iputils-ping libcurl4 libicu60 python3-wheel \
     libjson-glib-dev librabbitmq-dev
 
