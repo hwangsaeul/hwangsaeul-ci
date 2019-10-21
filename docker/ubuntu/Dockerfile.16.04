@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
   apt-get install --assume-yes software-properties-common && \
-  add-apt-repository ppa:hwangsaeul/ppa && \
+  add-apt-repository ppa:hwangsaeul/continuous-integration && \
   apt-get update && \
   apt-get install --assume-yes -t xenial-backports debhelper meson && \
   apt-get install --assume-yes libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev \
