@@ -14,9 +14,9 @@ jobs:
       ubuntu-1804:
         ubuntu.version.dot: '18.04'
         ubuntu.version.name: '1804'
-      ubuntu-1904:
-        ubuntu.version.dot: '19.04'
-        ubuntu.version.name: '1904'
+#      ubuntu-1904:
+#        ubuntu.version.dot: '19.04'
+#        ubuntu.version.name: '1904'
 
   variables:
   - group: hwangsaeul-acr

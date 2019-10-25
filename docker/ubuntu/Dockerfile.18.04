@@ -10,7 +10,7 @@ RUN apt-get update && \
     libsrt-dev \
     gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
     git \
-    ca-certificates curl jq iputils-ping libcurl4 libicu60 python3-wheel \
+    ca-certificates curl jq iputils-ping libcurl4 libicu60 python3-wheel python3-pip \
     libjson-glib-dev librabbitmq-dev
 
 RUN mkdir -p /azp
