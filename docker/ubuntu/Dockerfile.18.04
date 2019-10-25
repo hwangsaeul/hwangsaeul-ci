@@ -9,7 +9,7 @@ RUN apt-get update && \
   apt-get install --assume-yes debhelper meson libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev \
     libsrt-dev \
     gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
-    git \
+    git sudo \
     ca-certificates curl jq iputils-ping libcurl4 libicu60 python3-wheel python3-pip \
     libjson-glib-dev librabbitmq-dev
 
@@ -18,5 +18,19 @@ RUN mkdir -p /azp
 WORKDIR /azp
 COPY ./start.sh .
 RUN chmod +x start.sh
+
+
+RUN locale-gen en_US.UTF-8 \
+ && echo "LANG=\"en_US.UTF-8\"" > /etc/default/locale \
+ && update-locale
+
+RUN useradd ubuntu-builder -m -u 1000 && \
+    echo "ubuntu-builder ALL=(ALL:ALL) NOPASSWD:ALL"   >> /etc/sudoers
+
+USER ubuntu-builder
+ENV PATH="/home/ubuntu-builder/.local/bin:${PATH}"
+
+RUN git config --global user.email "noreply@hwangsaeul.org" \
+ && git config --global user.name "No Reply"
 
 CMD ["/azp/start.sh"]
