@@ -14,7 +14,10 @@ RUN apt-get update && \
     ca-certificates curl jq iputils-ping libcurl3 libicu55 python3-wheel python3-pip \
     libjson-glib-dev librabbitmq-dev
 
-RUN mkdir -p /azp
+RUN useradd ubuntu-builder -m -u 1000 && \
+    echo "ubuntu-builder ALL=(ALL:ALL) NOPASSWD:ALL"   >> /etc/sudoers
+
+RUN mkdir -p /azp && chown -R ubuntu-builder /azp
 
 WORKDIR /azp
 COPY ./start.sh .
@@ -23,9 +26,6 @@ RUN chmod +x start.sh
 RUN locale-gen en_US.UTF-8 \
  && echo "LANG=\"en_US.UTF-8\"" > /etc/default/locale \
  && update-locale
-
-RUN useradd ubuntu-builder -m -u 1000 && \
-    echo "ubuntu-builder ALL=(ALL:ALL) NOPASSWD:ALL"   >> /etc/sudoers
 
 USER ubuntu-builder
 ENV PATH="/home/ubuntu-builder/.local/bin:${PATH}"
