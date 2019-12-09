@@ -1,0 +1,10 @@
+FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && \
+  apt-get install --assume-yes software-properties-common && \
+  add-apt-repository ppa:hwangsaeul/nightly && \
+  apt-get install --assume-yes systemd hwangsae-relay
+
+CMD [ "/sbin/init" ]
