@@ -19,13 +19,13 @@ jobs:
 #        ubuntu.version.name: '1904'
 
   variables:
-  - group: hwangsaeul-acr
+  - group: hwangsaeul-dockerhub
 
   steps:
   - bash: |
       docker build \
         -f docker/ubuntu/Dockerfile.$(ubuntu.version.dot) \
-        -t hwangsaeul/ci-ubuntu-$(ubuntu.version.name) docker/ubuntu
+        -t hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name) docker/ubuntu
 
     displayName: Build docker image
 
@@ -36,32 +36,32 @@ jobs:
        
       if [ x"$PARSED_TAG" != "x" ]; then
 
-        docker login -u $(acr.id) -p $(acr.passwd) $(acr.host)
+        docker login -u $(dockerhub.id) -p $(dockerhub.passwd) $(dockerhub.host)
 
         docker tag \
-          hwangsaeul/ci-ubuntu-$(ubuntu.version.name) \
-          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):$PARSED_TAG
+          hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name) \
+          $(dockerhub.host)/hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name):$PARSED_TAG
 
         docker tag \
-          hwangsaeul/ci-ubuntu-$(ubuntu.version.name) \
-          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):latest
+          hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name) \
+          $(dockerhub.host)/hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name):latest
 
         docker push \
-          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):$PARSED_TAG
+          $(dockerhub.host)/hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name):$PARSED_TAG
 
         docker push \
-          $(acr.host)/hwangsaeul/ci-ubuntu-$(ubuntu.version.name):latest
+          $(dockerhub.host)/hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name):latest
       fi
 
     condition: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
-    displayName: Push images to ACR
+    displayName: Push images to DockerHub
 
   - bash: |
-      docker login -u $(acr.id) -p $(acr.passwd) $(acr.host)
+      docker login -u $(dockerhub.id) -p $(dockerhub.passwd) $(dockerhub.host)
       SHORT_GIT_HASH=`git rev-parse --short HEAD`
 
       docker save \
-        hwangsaeul/ci-ubuntu-$(ubuntu.version.name) | gzip > ci-ubuntu-$(ubuntu.version.name)-$SHORT_GIT_HASH.tgz
+        hwangsaeul/h8l-ci-ubuntu-$(ubuntu.version.name) | gzip > h8l-ci-ubuntu-$(ubuntu.version.name)-$SHORT_GIT_HASH.tgz
     condition: not(startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
     displayName: Archiving docker image
 
